@@ -12,6 +12,9 @@ public class UserController {
 
     @PostMapping("/register")
     public String registerUser(@RequestBody User user) {
+        if (user.getUsername() == null || user.getPassword() == null || user.getRole() == null) {
+            return "All fields are required.";
+        }
         return "User " + user.getUsername() + " registered with role: " + user.getRole();
     }
 }
