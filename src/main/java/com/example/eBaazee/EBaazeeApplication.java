@@ -1,13 +1,13 @@
-package com.fsad.auction_backend;
+package com.example.eBaazee;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class AuctionBackendApplication {
+public class EBaazeeApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(AuctionBackendApplication.class, args);
+		SpringApplication.run(EBaazeeApplication.class, args);
 	}
 
 }
