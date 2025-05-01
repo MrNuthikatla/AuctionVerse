@@ -6,8 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class EBaazeeApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(EBaazeeApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(EBaazeeApplication.class, args);
+    }
 
 }
