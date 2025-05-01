@@ -1,10 +1,10 @@
-package com.fsad.auction_backend;
+package com.example.eBaazee;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class AuctionBackendApplicationTests {
+class EBaazeeApplicationTests {
 
 	@Test
 	void contextLoads() {
