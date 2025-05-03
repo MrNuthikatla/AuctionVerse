@@ -19,4 +19,10 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> findByPriceBetween(double minPrice, double maxPrice);
 
     List<Product> findByLocation(String location);
+
+    List<Product> findBySellerId(Long sellerId);
+
+    List<Product> findByBidId(Long bidId);
+
+    List<Product> findByBidderId(Long bidderId);
 }
