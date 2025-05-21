@@ -25,4 +25,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> findByBidId(Long bidId);
 
     List<Product> findByBidderId(Long bidderId);
+
+    List<Product> findPopularProducts(int limit, int offset, String sortBy, String orderBy);
 }
