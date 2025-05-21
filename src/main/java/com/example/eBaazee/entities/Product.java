@@ -44,10 +44,12 @@ public class Product {
     private double minBid;
     private double maxBid;
     @Enumerated(EnumType.STRING)
-    private ProductStatus status; // ACTIVE, FROZEN, SOLD
+    private ProductStatus status = ProductStatus.ACTIVE; // ACTIVE, FROZEN, SOLD
     private Double finalPrice;
     @OneToMany(mappedBy = "product")
     private List<Bid> bids;
+
+    private double currentBidPrice = 0.0;
 
     public enum ProductStatus {
         ACTIVE, FROZEN, SOLD

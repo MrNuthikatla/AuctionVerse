@@ -29,6 +29,11 @@ public class BidServiceImpl implements BidService {
         User user = userRepo.findById(userId)
             .orElseThrow(() -> new RuntimeException("User not found"));
 
+        if (product.getEndTime().isBefore(LocalDateTime.now())) {
+            product.setStatus(Product.ProductStatus.FROZEN);
+            productRepo.save(product);
+        }
+
         if (product.getStatus() != Product.ProductStatus.ACTIVE) {
             throw new RuntimeException("Bidding is closed for this product");
         }
@@ -37,9 +42,16 @@ public class BidServiceImpl implements BidService {
             throw new RuntimeException("Bid must be within min and max bid");
         }
 
+        if (price <= product.getCurrentBidPrice()) {
+            throw new RuntimeException("Bid must be higher than the current bid");
+        }
+
         if (bidRepo.existsByProductAndBidder(product, user)) {
             throw new RuntimeException("User has already placed a bid");
         }
+
+        product.setCurrentBidPrice(price);
+        productRepo.save(product);
 
         Bid bid = new Bid();
         bid.setProduct(product);
@@ -72,4 +84,5 @@ public class BidServiceImpl implements BidService {
         List<Bid> bids = getBidsForProduct(productId);
         return bids.stream().mapToDouble(Bid::getBidPrice).max().orElse(0);
     }
+
 }
