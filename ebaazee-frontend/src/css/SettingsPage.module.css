@@ -1,0 +1,122 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  padding-bottom: 32px;
+}
+
+/* common card style */
+.card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+/* section heading */
+.heading {
+  margin: 0;
+  font-size: 1.25rem;
+}
+.divider {
+  margin: 16px 0;
+  border: none;
+  border-top: 1px solid #e0e0e0;
+}
+
+/* avatar + upload row */
+.avatarSection {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+.avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+.uploadGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.uploadLabel {
+  display: inline-block;
+  background: #578FCA;
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.uploadInput {
+  display: none;
+}
+.uploadHelp {
+  font-size: 0.85rem;
+  color: #555;
+}
+
+/* info form grid */
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+/* makes an item span both columns */
+.fullWidth {
+  grid-column: 1 / -1;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* now inlineGroup only affects the button+input alignment */
+.inlineGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* ensure inputs and buttons expand naturally */
+.inlineGroup input {
+  flex: 1 1 240px;
+  min-width: 0; /* this prevents overflow in flex */
+}
+
+/* rest of your inputs/buttons unchanged */
+input[type="text"],
+input[type="email"],
+input[type="tel"] {
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.verifyButton {
+  background: #393E46;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 16px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.saveButton {
+  background: #578FCA;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-size: 1rem;
+  cursor: pointer;
+}
