@@ -1,0 +1,26 @@
+# Maven target folder
+/target/
+
+# IntelliJ IDEA files
+/.idea/
+/*.iml
+
+# Eclipse files
+.classpath
+.project
+.settings/
+
+# Mac system files
+.DS_Store
+
+# Logs
+*.log
+
+# OS generated files
+Thumbs.db
+
+# Ignore environment files
+.env
+
+# Ignore IDE-specific metadata
+.vscode/
