@@ -1,0 +1,23 @@
+.root { padding:24px; }
+.topBar {
+  display:flex; justify-content:space-between; align-items:center;
+  margin-bottom:32px;
+}
+.searchInput {
+  padding:10px 16px; border-radius:24px; border:1px solid #ccc;
+  width:300px; max-width:100%;
+}
+.wallet {
+  background:#fff; border-radius:20px; padding:10px 20px; font-weight:bold;
+}
+
+.section { margin-top:24px; }
+.sectionTitle { font-size:1.5rem; margin-bottom:16px; }
+.list {
+  list-style:none; padding:0; margin:0; display:grid; gap:12px;
+}
+.list li {
+  padding:12px; background:#fafafa; border-radius:8px;
+  cursor:pointer; transition:background .2s;
+}
+.list li:hover { background:#f0f0f0; }
