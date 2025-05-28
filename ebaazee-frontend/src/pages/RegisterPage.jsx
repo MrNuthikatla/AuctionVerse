@@ -11,15 +11,47 @@ export default function RegisterPage() {
   const [role, setRole]             = useState(''); // default to buyer
   const navigate = useNavigate();
 
-  const handleRegister = e => {
+  const handleRegister = async (e) => {
     e.preventDefault();
-    // Store registered user
-    localStorage.setItem('isRegistered', 'true');
-    localStorage.setItem('registeredEmail', email);
-    localStorage.setItem('registeredPassword', password);
-    localStorage.setItem('userRole', role);
-    navigate('/login');
+
+    if (password !== confirmPassword) {
+      alert("Passwords do not match");
+      return;
+    }
+
+    const payload = {
+      firstName: name.split(" ")[0],
+      lastName: name.split(" ").slice(1).join(" ") || "",
+      username: email,
+      password: password,
+      role: role.toUpperCase()  // "BUYER" or "SELLER"
+    };
+
+    try {
+      const response = await fetch("http://localhost:9090/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Registered successfully", data);
+        alert("Registration successful!");
+        navigate("/login");
+      } else {
+        const error = await response.text();
+        console.error("Registration failed:", error);
+        alert("Registration failed: " + error);
+      }
+    } catch (err) {
+      console.error("Error during registration:", err);
+      alert("Error during registration. See console.");
+    }
   };
+
 
   return (
     <div className="register-container">

@@ -3,7 +3,8 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import glassBg from '../assets/abstract-bg.png';
 import logo from '../assets/logo.png'; 
-import '../css/LoginPage.css';         
+import '../css/LoginPage.css';
+import { jwtDecode } from 'jwt-decode';
 
 export default function LoginPage() {
   const [email, setEmail]       = useState('');
@@ -11,38 +12,85 @@ export default function LoginPage() {
   const [remember, setRemember] = useState(false);
   const navigate = useNavigate();
 
+  // const handleLogin = async (e) => {
+  //   e.preventDefault();
+  //
+  //   // localStorage.setItem('isLoggedIn', 'true');
+  //   // const role = localStorage.getItem('role');
+  //   // if(role == "buyer")
+  //   //   navigate('/explore');
+  //   // else
+  //   //   navigate('/seller')
+  //   if (email === 'admin@example.com' && password === 'admin123') {
+  //     localStorage.setItem('isLoggedIn', 'true');
+  //     localStorage.setItem('adminLoggedIn', 'true');
+  //     return navigate('/admin', { replace: true });
+  //   }
+  //
+  //   const regEmail = localStorage.getItem('registeredEmail');
+  //   const regPass  = localStorage.getItem('registeredPassword');
+  //   const role     = localStorage.getItem('userRole');
+  //
+  //   if (email === regEmail && password === regPass) {
+  //     localStorage.setItem('isLoggedIn', 'true');
+  //     localStorage.removeItem('adminLoggedIn');
+  //     // route by role
+  //     if (role === 'seller') {
+  //       navigate('/seller',{ replace: true });
+  //     } else {
+  //       navigate('/explore',{ replace: true });
+  //     }
+  //   } else {
+  //     alert('Invalid credentials');
+  //   }
+  // };
+
   const handleLogin = async (e) => {
     e.preventDefault();
 
-    // localStorage.setItem('isLoggedIn', 'true');
-    // const role = localStorage.getItem('role');
-    // if(role == "buyer")
-    //   navigate('/explore');
-    // else
-    //   navigate('/seller')
-    if (email === 'admin@example.com' && password === 'admin123') {
-      localStorage.setItem('isLoggedIn', 'true');
-      localStorage.setItem('adminLoggedIn', 'true');
-      return navigate('/admin', { replace: true });
-    }
+    try {
+      const response = await fetch('http://localhost:9090/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username: email,
+          password: password,
+        }),
+      });
 
-    const regEmail = localStorage.getItem('registeredEmail');
-    const regPass  = localStorage.getItem('registeredPassword');
-    const role     = localStorage.getItem('userRole');
-
-    if (email === regEmail && password === regPass) {
-      localStorage.setItem('isLoggedIn', 'true');
-      localStorage.removeItem('adminLoggedIn');
-      // route by role
-      if (role === 'seller') {
-        navigate('/seller',{ replace: true });
-      } else {
-        navigate('/explore',{ replace: true });
+      if (!response.ok) {
+        throw new Error('Invalid credentials');
       }
-    } else {
-      alert('Invalid credentials');
+
+      const data = await response.json();
+      const token = data.token;
+
+      localStorage.setItem('token', token);
+      localStorage.setItem('isLoggedIn', 'true');
+
+      const decoded = jwtDecode(token);// decode the JWT// adjust according to your token's payload key
+
+      console.log("Decoded JWT:", decoded);
+
+      const role = data.role.toUpperCase();
+      if (role === 'SELLER') {
+        navigate('/seller', { replace: true });
+      } else if (role === 'BUYER') {
+        navigate('/explore', { replace: true });
+      } else if (role === 'ADMIN') {
+        localStorage.setItem('adminLoggedIn', 'true');
+        navigate('/admin', { replace: true });
+      } else {
+        navigate('/explore', { replace: true });
+      }
+
+    } catch (err) {
+      alert(err.message);
     }
   };
+
 
   return (
     <div className="login-container">
@@ -56,7 +104,7 @@ export default function LoginPage() {
             <label htmlFor="email">Email</label>
             <input
               id="email"
-              type="email"
+              type="text"
               placeholder="you@example.com"
               value={email}
               onChange={e => setEmail(e.target.value)}

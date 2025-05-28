@@ -1,6 +1,7 @@
 package com.example.RoleBasedAuth.service;
 
 import com.example.RoleBasedAuth.model.AuthenticationResponse;
+import com.example.RoleBasedAuth.model.Role;
 import com.example.RoleBasedAuth.model.Token;
 import com.example.RoleBasedAuth.model.User;
 import com.example.RoleBasedAuth.repository.TokenRepository;
@@ -73,9 +74,12 @@ public class AuthenticationService {
         revokeAllTokenByUser(user);
         saveUserToken(jwt, user);
 
-        return new AuthenticationResponse(jwt, "User login was successful");
+        // get role from user entity
+        Role role = user.getRole();
 
+        return new AuthenticationResponse(jwt, "User login was successful", role);
     }
+
 
     private void revokeAllTokenByUser(User user) {
         List<Token> validTokens = tokenRepository.findAllTokensByUser(user.getId());

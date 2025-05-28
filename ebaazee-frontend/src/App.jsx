@@ -23,7 +23,7 @@ function App() {
           <Route path="/register" element={<RegisterPage />} />
 
           {/* 2. All login and beyond requires registration */}
-          <Route element={<RequireRegistration />}>
+          {/*<Route element={<RequireRegistration />}>*/}
             <Route path="/login" element={<LoginPage />} />
 
             {/* 3. Buyer and Seller flows both require login */}
@@ -35,7 +35,7 @@ function App() {
                 <Route path="listings" element={<MyListingsPage />} />
               </Route>
             </Route>
-          </Route>
+          {/*</Route>*/}
 
           {/* Default “/” or unknown → redirect to the correct first step */}
           <Route
