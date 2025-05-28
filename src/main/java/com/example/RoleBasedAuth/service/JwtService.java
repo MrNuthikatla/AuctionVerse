@@ -27,14 +27,16 @@ public class JwtService {
 
 
     public boolean isValid(String token, UserDetails user) {
+//        String username = extractUsername(token);
+//
+//        boolean validToken = tokenRepository
+//            .findByToken(token)
+//            .map(t -> !t.isLoggedOut())
+//            .orElse(false);
+//
+//        return (username.equals(user.getUsername())) && !isTokenExpired(token) && validToken;
         String username = extractUsername(token);
-
-        boolean validToken = tokenRepository
-            .findByToken(token)
-            .map(t -> !t.isLoggedOut())
-            .orElse(false);
-
-        return (username.equals(user.getUsername())) && !isTokenExpired(token) && validToken;
+        return (username.equals(user.getUsername())) && !isTokenExpired(token);
     }
 
     private boolean isTokenExpired(String token) {

@@ -68,8 +68,8 @@ public class BidController {
             return ResponseEntity.badRequest().body("Bid amount must be >= minimum bid.");
         }
 
-        if (bidAmount <= product.getMaxBid()) {
-            return ResponseEntity.badRequest().body("Bid must be higher than current max bid.");
+        if (bidAmount > product.getMaxBid()) {
+            return ResponseEntity.badRequest().body("Bid must be less than or equal max bid.");
         }
 
         // Save bid

@@ -1,6 +1,6 @@
 package com.example.RoleBasedAuth.controller;
 
-import com.example.RoleBasedAuth.model.Bid;
+import com.example.RoleBasedAuth.dto.BidDTO;
 import com.example.RoleBasedAuth.model.User;
 import com.example.RoleBasedAuth.repository.BidRepository;
 import java.util.List;
@@ -22,7 +22,11 @@ public class UserController {
 
     @GetMapping("/my-bids")
     public ResponseEntity<?> getMyBids(@AuthenticationPrincipal User user) {
-        List<Bid> myBids = bidRepository.findByBidder(user);
+        List<BidDTO> myBids = bidRepository.findByBidder(user)
+            .stream()
+            .map(BidDTO::new)
+            .toList();
+
         return ResponseEntity.ok(myBids);
     }
 }

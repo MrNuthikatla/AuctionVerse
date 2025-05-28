@@ -21,7 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-public class SecuritConfig {
+public class SecurityConfig {
 
     @Autowired
     private UserDetailsImp userDetailsImp;
@@ -30,32 +30,39 @@ public class SecuritConfig {
 
     @Autowired
     private LogoutHandler logoutHandler;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         return http
-                .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(
-                        req->req.requestMatchers("/auth/**")
-                                .permitAll()
-                                .requestMatchers("/admin_only/**").hasAuthority("ADMIN")
-                                .anyRequest()
-                                .authenticated()
-                ).userDetailsService(userDetailsImp)
-                .sessionManagement(session->session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .exceptionHandling(
-                        e->e.accessDeniedHandler(
-                                        (request, response, accessDeniedException)->response.setStatus(403)
-                                )
-                                .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
-                .logout(l->l
-                        .logoutUrl("/logout")
-                        .addLogoutHandler(logoutHandler)
-                        .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext()
-                        ))
-                .build();
+            .csrf(AbstractHttpConfigurer::disable)
+            .authorizeHttpRequests(
+                req -> req
+                    .requestMatchers(
+                        "/auth/**",
+                        "/v3/api-docs/**",       // OpenAPI spec
+                        "/swagger-ui/**",        // Swagger UI resources
+                        "/swagger-ui.html",      // Main Swagger UI page
+                        "/ebaazee-docs/**"       // Your custom OpenAPI JSON path
+                    ).permitAll()
+                    .requestMatchers("/admin_only/**").hasAuthority("ADMIN")
+                    .anyRequest().authenticated()
+            )
+            .userDetailsService(userDetailsImp)
+            .sessionManagement(session -> session
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+            .exceptionHandling(
+                e -> e.accessDeniedHandler(
+                        (request, response, accessDeniedException) -> response.setStatus(403)
+                    )
+                    .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
+            .logout(l -> l
+                .logoutUrl("/logout")
+                .addLogoutHandler(logoutHandler)
+                .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext()
+                ))
+            .build();
 
     }
 
