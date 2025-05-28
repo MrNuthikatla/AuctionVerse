@@ -38,6 +38,8 @@ public class Product {
 
     private double minBid;
 
+//    private double currentBid;
+
     @ManyToOne
     @JoinColumn(name = "seller_id", nullable = false)
     private User seller;

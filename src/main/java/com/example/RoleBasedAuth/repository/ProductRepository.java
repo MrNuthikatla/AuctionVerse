@@ -1,6 +1,7 @@
 package com.example.RoleBasedAuth.repository;
 
 
+import com.example.RoleBasedAuth.model.Category;
 import com.example.RoleBasedAuth.model.Product;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -11,5 +12,7 @@ import org.springframework.stereotype.Repository;
 public interface ProductRepository extends JpaRepository<Product, Integer> {
 
     List<Product> findByEndTimeBeforeAndIsFrozenFalse(LocalDateTime time);
+
+    List<Product> findByCategory(Category category);
 
 }

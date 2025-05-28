@@ -22,7 +22,7 @@ public class SellerController {
     @Autowired
     private ProductRepository productRepository;
 
-    @PostMapping("/products")
+    @PostMapping("/addproducts")
     @PreAuthorize("hasAuthority('SELLER')")
     public ResponseEntity<?> addProduct(
         @AuthenticationPrincipal User seller,
@@ -38,6 +38,7 @@ public class SellerController {
         product.setCategory(productRequest.getCategory());
         product.setMinBid(productRequest.getMinBid());
         product.setMaxBid(productRequest.getMaxBid());
+//        product.setCurrentBid(0.00);
         product.setEndTime(productRequest.getEndTime());
         product.setSeller(seller);
         product.setFrozen(false);
