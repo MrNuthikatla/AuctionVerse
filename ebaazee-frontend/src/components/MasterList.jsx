@@ -6,9 +6,7 @@ import styles from '../css/MasterList.module.css';
 
 export default function MasterList({ selectedSection, onSelectSection }) {
   const marketplaceItems = [
-    { key: 'explore', label: 'Explore' },
-    { key: 'activeBids', label: 'Active Bids' },
-    { key: 'favourites', label: 'Favourites' },
+    { key: 'explore', label: 'Explore' }
   ];
   const userItems = [
     { key: 'dashboard',  label: 'Dashboard' },
