@@ -2,8 +2,6 @@
 import React, { useState } from 'react';
 import MasterList from './MasterList';
 import ExplorePage   from '../pages/ExplorePage';
-import ActiveBidsPage from '../pages/ActiveBidsPage';
-import FavouritesPage from '../pages/FavouritesPage';
 import DashboardPage from '../pages/DashboardPage';
 import MyAuctionPage from '../pages/MyAuctionPage';
 import PaymentPage from '../pages/PaymentPage';
@@ -18,8 +16,6 @@ export default function SideMenu() {
   const renderDetail = () => {
     switch (selectedSection) {
       case 'explore':    return <ExplorePage />;
-      case 'activeBids': return <ActiveBidsPage />;
-      case 'favourites': return <FavouritesPage />;
       case 'dashboard':    return <DashboardPage />;
       case 'myauction':   return <MyAuctionPage />;
       case 'payment':   return <PaymentPage />;
