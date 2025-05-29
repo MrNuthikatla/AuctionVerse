@@ -12,6 +12,9 @@ public class BidDTO {
 
     private Integer productId;
     private String productName;
+    private boolean isSold;
+    private Integer buyerId;
+    private LocalDateTime endTime;
 
     public BidDTO(Bid bid) {
         this.id = bid.getId();
@@ -20,7 +23,12 @@ public class BidDTO {
 
         if (bid.getProduct() != null) {
             this.productId = bid.getProduct().getId();
-            this.productName = bid.getProduct().getName();  // Assuming `name` field exists in Product
+            this.productName = bid.getProduct().getName();
+            this.isSold = bid.getProduct().isSold();
+            this.endTime = bid.getProduct().getEndTime();
+            if (bid.getProduct().getBuyer() != null) {
+                this.buyerId = bid.getProduct().getBuyer().getId();
+            }
         }
     }
 }

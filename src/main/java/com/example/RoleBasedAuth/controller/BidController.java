@@ -38,9 +38,9 @@ public class BidController {
 
     @PostMapping("/place/{productId}")
     public ResponseEntity<?> placeBid(
-        @PathVariable Integer productId,
-        @RequestParam Integer bidAmount,
-        @AuthenticationPrincipal User user
+            @PathVariable Integer productId,
+            @RequestParam Integer bidAmount,
+            @AuthenticationPrincipal User user
     ) {
         // Only BUYERs can bid
         if (user.getRole() != Role.BUYER) {
@@ -72,18 +72,23 @@ public class BidController {
             return ResponseEntity.badRequest().body("Bid must be less than or equal max bid.");
         }
 
+        // Check if bid is higher than current max bid
+        if (bidAmount <= product.getCurrentBid()) {
+            return ResponseEntity.badRequest().body("Bid amount must be higher than the current bid.");
+        }
+
         // Save bid
         Bid bid = Bid.builder()
-            .product(product)
-            .bidder(user)
-            .amount(bidAmount)
-            .bidTime(LocalDateTime.now())
-            .build();
+                .product(product)
+                .bidder(user)
+                .amount(bidAmount)
+                .bidTime(LocalDateTime.now())
+                .build();
 
         bidRepository.save(bid);
 
-        // Update product maxBid
-        product.setMaxBid(bidAmount);
+        // Update product current bid
+        product.setCurrentBid(bidAmount);
         productRepository.save(product);
 
         return ResponseEntity.ok("Bid placed successfully.");
@@ -91,8 +96,8 @@ public class BidController {
 
     @GetMapping("/status/{productId}")
     public ResponseEntity<?> getBidStatus(
-        @PathVariable Integer productId,
-        @AuthenticationPrincipal User user  // Spring Security injects authenticated user
+            @PathVariable Integer productId,
+            @AuthenticationPrincipal User user  // Spring Security injects authenticated user
     ) {
         Product product = productRepository.findById(productId).orElse(null);
 
