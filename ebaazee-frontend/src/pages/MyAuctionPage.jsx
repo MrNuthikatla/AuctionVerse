@@ -124,4 +124,4 @@ export default function MyAuctionsPage() {
           )}
         </div>
       </div>
-  );
+  );}
