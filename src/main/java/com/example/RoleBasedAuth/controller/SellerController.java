@@ -25,8 +25,8 @@ public class SellerController {
     @PostMapping("/addproducts")
     @PreAuthorize("hasAuthority('SELLER')")
     public ResponseEntity<?> addProduct(
-        @AuthenticationPrincipal User seller,
-        @RequestBody ProductRequestDTO productRequest
+            @AuthenticationPrincipal User seller,
+            @RequestBody ProductRequestDTO productRequest
     ) {
         if (productRequest.getMinBid() > productRequest.getMaxBid()) {
             return ResponseEntity.badRequest().body("minBid cannot be greater than maxBid");
@@ -38,7 +38,7 @@ public class SellerController {
         product.setCategory(productRequest.getCategory());
         product.setMinBid(productRequest.getMinBid());
         product.setMaxBid(productRequest.getMaxBid());
-//        product.setCurrentBid(0.00);
+        product.setCurrentBid(0.00);
         product.setEndTime(productRequest.getEndTime());
         product.setSeller(seller);
         product.setFrozen(false);
