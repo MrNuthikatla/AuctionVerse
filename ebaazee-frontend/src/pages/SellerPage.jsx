@@ -84,82 +84,102 @@ export default function SellerPage() {
   };
 
   return (
-      <div>
-        <h1>Create New Auction Listing</h1>
+      <div className={styles.root}>
+      <div className={styles.card}>
+        <h1 className={styles.heading}>Create New Auction Listing</h1>
         <form className={styles.form} onSubmit={handleSubmit}>
+          {/* Title */}
           <div className={styles.field}>
-            <label>Name</label>
+            <label>Title</label>
             <input
-                name="name"
-                type="text"
-                value={form.name}
-                onChange={handleChange}
-                required
+              name="title"
+              type="text"
+              value={form.title}
+              onChange={handleChange}
+              placeholder="e.g. Vintage Lamp"
+              required
             />
           </div>
 
+          {/* Description */}
           <div className={styles.field}>
             <label>Description</label>
             <textarea
-                name="description"
-                rows="3"
-                value={form.description}
-                onChange={handleChange}
-                required
+              name="description"
+              rows="4"
+              value={form.description}
+              onChange={handleChange}
+              placeholder="Write a brief description of your item..."
+              required
             />
           </div>
 
+          {/* Category */}
           <div className={styles.field}>
             <label>Category</label>
             <select
-                name="category"
-                value={form.category}
-                onChange={handleChange}
-                required
+              name="categoryId"
+              value={form.categoryId}
+              onChange={handleChange}
+              required
             >
-              <option value="">-- select --</option>
+              <option value="">— Select a category —</option>
               {categories.map(cat => (
-                  <option key={cat} value={cat}>
-                    {cat}
-                  </option>
+                <option key={cat.id} value={cat.id}>
+                  {cat.name}
+                </option>
               ))}
             </select>
           </div>
 
-          <div className={styles.field}>
-            <label>End Time</label>
-            <input
+          {/* Start / End times */}
+          <div className={styles.fieldGroup}>
+            <div className={styles.field}>
+              <label>Start Time</label>
+              <input
+                name="startTime"
+                type="datetime-local"
+                value={form.startTime}
+                onChange={handleChange}
+                required
+              />
+            </div>
+            <div className={styles.field}>
+              <label>End Time</label>
+              <input
                 name="endTime"
                 type="datetime-local"
                 value={form.endTime}
                 onChange={handleChange}
                 required
-            />
+              />
+            </div>
           </div>
 
+          {/* Bid range */}
           <div className={styles.fieldGroup}>
             <div className={styles.field}>
-              <label>Minimum Bid</label>
+              <label>Minimum Bid ($)</label>
               <input
-                  name="minBid"
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  value={form.minBid}
-                  onChange={handleChange}
-                  required
+                name="minBid"
+                type="number"
+                min="0"
+                step="0.01"
+                value={form.minBid}
+                onChange={handleChange}
+                required
               />
             </div>
             <div className={styles.field}>
-              <label>Maximum Bid</label>
+              <label>Maximum Bid ($)</label>
               <input
-                  name="maxBid"
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  value={form.maxBid}
-                  onChange={handleChange}
-                  required
+                name="maxBid"
+                type="number"
+                min="0"
+                step="0.01"
+                value={form.maxBid}
+                onChange={handleChange}
+                required
               />
             </div>
           </div>
@@ -169,5 +189,6 @@ export default function SellerPage() {
           </button>
         </form>
       </div>
+    </div>
   );
 }
