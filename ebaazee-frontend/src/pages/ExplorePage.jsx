@@ -259,6 +259,11 @@ export default function ExplorePage() {
     return statusMatch && categoryMatch && searchMatch;
   });
 
+  const resetFilters = () => {
+    setActiveCategory(categories[0]?.value);
+    setSales(filterOptions.sales[0].value);
+  };
+
   return (
       <div className={styles.root}>
         {/* 1. Top Bar */}
@@ -405,6 +410,12 @@ export default function ExplorePage() {
                 ))}
               </select>
             </div>
+
+            {/* Reset Button */}
+            <button className={listStyles.applyButton} onClick={resetFilters}>
+              Reset
+            </button>
+
           </aside>
 
           {/* Results Grid */}
@@ -476,6 +487,9 @@ export default function ExplorePage() {
                 </p>
                 <p>
                   <strong>Current Bid:</strong> ${selectedProduct.currentBid}
+                </p>
+                <p className={styles.modalDescription}>
+                  {selectedProduct.description || "No description available."}
                 </p>
                 <p>
                   <strong>Allowed Range:</strong> ${selectedProduct.minBid} – $
