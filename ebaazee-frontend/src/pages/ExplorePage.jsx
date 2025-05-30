@@ -3,6 +3,7 @@ import filterOptions from "../data/filters.json";
 import styles from "../css/ExplorePage.module.css";
 import listStyles from "../css/ListingSection.module.css";
 import walletData from "../data/UserProfile.json";
+import { useSection } from '../context/SectionContext';
 
 // Countdown timer for product endTime
 function CountdownTimer({ endTime }) {
@@ -80,6 +81,7 @@ export default function ExplorePage() {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [bidAmount, setBidAmount] = useState("");
   const [feedback, setFeedback] = useState("");
+  const [bidPlaced, setBidPlaced] = useState(false);
 
   // Carousel state
   const [current, setCurrent] = useState(0);
@@ -91,6 +93,9 @@ export default function ExplorePage() {
   const catRef = useRef(null);
   const didMountCat = useRef(false);
 
+  //Context state
+  const { setSection } = useSection();
+  
   // Fetch categories from backend and add "All"
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -198,6 +203,7 @@ export default function ExplorePage() {
     setBidAmount("");
     setFeedback("");
     setModalOpen(true);
+    setBidPlaced(false);
   };
   const closeBidModal = () => setModalOpen(false);
 
@@ -231,6 +237,7 @@ export default function ExplorePage() {
         setFeedback(
             "✅ Your bid was placed successfully! Head to My Auctions to check its status."
         );
+        setBidPlaced(true);
       } else {
         setFeedback(`⚠️ ${text}`);
       }
@@ -239,6 +246,12 @@ export default function ExplorePage() {
     }
   };
 
+  //Context logic
+  const handleCheckout = () => {
+    closeBidModal();
+    setSection('payment');
+  };
+  
   // Status logic
   function getStatus(product) {
     if (product.sold) return "sold";
@@ -481,6 +494,13 @@ export default function ExplorePage() {
         {modalOpen && selectedProduct && (
             <div className={styles.modalOverlay} onClick={closeBidModal}>
               <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+                <button
+                  className={styles.modalClose}
+                  onClick={closeBidModal}
+                  aria-label="Close"
+                >
+                  ×
+              </button>
                 <h2>Place a Bid</h2>
                 <p>
                   <strong>Item:</strong> {selectedProduct.productName}
@@ -504,6 +524,7 @@ export default function ExplorePage() {
                       value={bidAmount}
                       onChange={(e) => setBidAmount(e.target.value)}
                       placeholder="Enter higher than current bid"
+                      disabled={bidPlaced} 
                   />
                 </div>
 
@@ -520,12 +541,18 @@ export default function ExplorePage() {
                 )}
 
                 <div className={styles.modalActions}>
-                  <button onClick={placeBid} className="btn">
-                    Place Bid
-                  </button>
-                  <button onClick={closeBidModal} className="btn outlined">
-                    Cancel
-                  </button>
+                  {!bidPlaced ? (                                
+                    <button onClick={placeBid} className="btn">
+                      Place Bid
+                    </button>
+                  ) : (                                         
+                    <button
+                      onClick={handleCheckout}
+                      className="btn"
+                    >
+                      Checkout
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
