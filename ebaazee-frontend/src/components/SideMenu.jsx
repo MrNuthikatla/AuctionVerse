@@ -8,9 +8,10 @@ import PaymentPage from '../pages/PaymentPage';
 import SettingsPage from '../pages/SettingsPage';
 import HelpAndSupportPage from '../pages/HelpAndSupportPage';
 import styles from '../css/SideMenu.module.css';
+import { useSection } from '../context/SectionContext';
 
 export default function SideMenu() {
-  const [selectedSection, setSelectedSection] = useState('explore');
+  const { section: selectedSection, setSection: setSelectedSection } = useSection();
   const [menuOpen, setMenuOpen] = useState(false);
 
   const renderDetail = () => {
