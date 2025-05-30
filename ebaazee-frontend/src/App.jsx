@@ -12,11 +12,11 @@ import SellerLayout from './components/SellerLayout';
 import SellerPage from './pages/SellerPage';
 import MyListingsPage from './pages/MyListingsPage';
 import AdminPage    from './pages/AdminPage'
-import { ProductsProvider } from './context/ProductsContext';
+import { SectionProvider } from './contexts/SectionContext';
 
 function App() {
   return (
-    <ProductsProvider>
+    
       <Router>
         <Routes>
           {/* 1. Registration is always open */}
@@ -29,7 +29,11 @@ function App() {
             {/* 3. Buyer and Seller flows both require login */}
             <Route element={<RequireLogin />}>
               <Route path="/admin"   element={<AdminPage />} />
-              <Route path="/explore" element={<SideMenu />} />
+              <Route path="/explore" element={
+                <SectionProvider>
+                  <SideMenu />
+                </SectionProvider>} 
+                />
               <Route path="/seller" element={<SellerLayout />}>
                 <Route index element={<SellerPage />} />
                 <Route path="listings" element={<MyListingsPage />} />
@@ -57,7 +61,7 @@ function App() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Router>
-    </ProductsProvider>
+    
   );
 }
 
