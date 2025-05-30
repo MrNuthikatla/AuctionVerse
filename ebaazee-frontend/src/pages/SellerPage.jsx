@@ -6,7 +6,7 @@ export default function SellerPage() {
   const [form, setForm] = useState({
     title: '',
     description: '',
-    category: '', // Use 'category' to match backend
+    category: '',
     startTime: '',
     endTime: '',
     minBid: '',
@@ -55,7 +55,11 @@ export default function SellerPage() {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          ...form,
+          name: form.title,
+          description: form.description,
+          category: form.category,
+          startTime: form.startTime,
+          endTime: form.endTime,
           minBid: parseFloat(form.minBid),
           maxBid: parseFloat(form.maxBid),
         }),
