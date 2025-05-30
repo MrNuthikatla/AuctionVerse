@@ -7,7 +7,6 @@ export default function SellerPage() {
     title: '',
     description: '',
     category: '',
-    startTime: '',
     endTime: '',
     minBid: '',
     maxBid: '',
@@ -58,7 +57,6 @@ export default function SellerPage() {
           name: form.title,
           description: form.description,
           category: form.category,
-          startTime: form.startTime,
           endTime: form.endTime,
           minBid: parseFloat(form.minBid),
           maxBid: parseFloat(form.maxBid),
@@ -75,7 +73,6 @@ export default function SellerPage() {
         title: '',
         description: '',
         category: '',
-        startTime: '',
         endTime: '',
         minBid: '',
         maxBid: '',
@@ -135,28 +132,16 @@ export default function SellerPage() {
               </select>
             </div>
 
-            {/* Start / End times */}
-            <div className={styles.fieldGroup}>
-              <div className={styles.field}>
-                <label>Start Time</label>
-                <input
-                    name="startTime"
-                    type="datetime-local"
-                    value={form.startTime}
-                    onChange={handleChange}
-                    required
-                />
-              </div>
-              <div className={styles.field}>
-                <label>End Time</label>
-                <input
-                    name="endTime"
-                    type="datetime-local"
-                    value={form.endTime}
-                    onChange={handleChange}
-                    required
-                />
-              </div>
+            {/* End Time */}
+            <div className={styles.field}>
+              <label>End Time</label>
+              <input
+                  name="endTime"
+                  type="datetime-local"
+                  value={form.endTime}
+                  onChange={handleChange}
+                  required
+              />
             </div>
 
             {/* Bid range */}
