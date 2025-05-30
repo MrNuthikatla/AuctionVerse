@@ -485,11 +485,17 @@ export default function ExplorePage() {
                 <p>
                   <strong>Item:</strong> {selectedProduct.productName}
                 </p>
+                 <p className={styles.modalDescription}>
+                  <strong>Description:</strong>{selectedProduct.description || "No description available."}
+                </p>
                 <p>
                   <strong>Current Bid:</strong> ${selectedProduct.currentBid}
                 </p>
-                <p className={styles.modalDescription}>
-                  {selectedProduct.description || "No description available."}
+                <p>
+                  <strong>Average Bid:</strong> ${selectedProduct.averageBid ?? '—'}
+                </p>
+                <p>
+                  <strong>Bidders:</strong> {selectedProduct.bidderCount ?? 0}
                 </p>
                 <p>
                   <strong>Allowed Range:</strong> ${selectedProduct.minBid} – $
