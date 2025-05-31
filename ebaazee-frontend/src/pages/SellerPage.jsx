@@ -88,10 +88,12 @@ export default function SellerPage() {
         <div className={styles.card}>
           <h1 className={styles.heading}>Create New Auction Listing</h1>
           <form className={styles.form} onSubmit={handleSubmit}>
+
             {/* Title */}
             <div className={styles.field}>
-              <label>Title</label>
+              <label htmlFor="title">Title</label>
               <input
+                  id="title"
                   name="title"
                   type="text"
                   value={form.title}
@@ -103,8 +105,9 @@ export default function SellerPage() {
 
             {/* Description */}
             <div className={styles.field}>
-              <label>Description</label>
+              <label htmlFor="description">Description</label>
               <textarea
+                  id="description"
                   name="description"
                   rows="4"
                   value={form.description}
@@ -116,8 +119,9 @@ export default function SellerPage() {
 
             {/* Category */}
             <div className={styles.field}>
-              <label>Category</label>
+              <label htmlFor="category">Category</label>
               <select
+                  id="category"
                   name="category"
                   value={form.category}
                   onChange={handleChange}
@@ -134,8 +138,9 @@ export default function SellerPage() {
 
             {/* End Time */}
             <div className={styles.field}>
-              <label>End Time</label>
+              <label htmlFor="endTime">End Time</label>
               <input
+                  id="endTime"
                   name="endTime"
                   type="datetime-local"
                   value={form.endTime}
@@ -147,8 +152,9 @@ export default function SellerPage() {
             {/* Bid range */}
             <div className={styles.fieldGroup}>
               <div className={styles.field}>
-                <label>Minimum Bid ($)</label>
+                <label htmlFor="minBid">Minimum Bid ($)</label>
                 <input
+                    id="minBid"
                     name="minBid"
                     type="number"
                     min="0"
@@ -159,8 +165,9 @@ export default function SellerPage() {
                 />
               </div>
               <div className={styles.field}>
-                <label>Maximum Bid ($)</label>
+                <label htmlFor="maxBid">Maximum Bid ($)</label>
                 <input
+                    id="maxBid"
                     name="maxBid"
                     type="number"
                     min="0"
