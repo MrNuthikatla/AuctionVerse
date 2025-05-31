@@ -116,9 +116,9 @@ export default function MyAuctionsPage() {
                     <div className={styles.bidInfo}>
                       Your Bid: <strong>${bid.amount?.toLocaleString()}</strong>
                     </div>
-                    <button className={styles.bidButton}>
-                      {buttonText(activeTab)}
-                    </button>
+                    <div className={styles.bidInfo}>
+                      Current Bid: <strong>${bid.amount?.toLocaleString()}</strong>
+                    </div>
                   </div>
               ))
           )}
