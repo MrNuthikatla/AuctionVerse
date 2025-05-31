@@ -5,8 +5,11 @@ import userData from '../data/UserProfile.json';
 import defaultAvatars from '../data/defaultAvatars.json';
 
 export default function DashboardPage() {
-  const {stats, bids, pagination } = data;
+//   const {stats, bids, pagination } = data;
   const [avatar, setAvatar] = useState(userData.avatarUrl);
+  const [bids, setBids] = useState([]);
+  const [pagination, setPagination] = useState({ current: 1, total: 1 }); // Placeholder
+  const [stats, setStats] = useState([]); // Placeholder
 
   useEffect(() => {
     const isPlaceholder = avatar === userData.avatarUrl;
@@ -14,7 +17,31 @@ export default function DashboardPage() {
       const randomIndex = Math.floor(Math.random() * defaultAvatars.length);
       setAvatar(defaultAvatars[randomIndex]);
     }
-  },[]);
+  }, []);
+
+  useEffect(() => {
+    fetch('http://localhost:9090/api/user/my-bids', {
+      credentials: 'include', // Important if using Spring Security + cookies
+      method: 'GET',
+              headers: {
+                'Accept': 'application/json',
+                // Add Authorization header here if your API requires auth
+                'Authorization': 'Bearer ' + localStorage.getItem('token')
+              }
+    })
+      .then(res => {
+        if (!res.ok) throw new Error('Failed to fetch bids');
+        return res.json();
+      })
+      .then(data => {
+        setBids(data);
+        console.log(data);
+        // Optionally calculate stats or pagination
+      })
+      .catch(err => {
+        console.error('Error fetching bids:', err);
+      });
+  }, []);
 
   return (
     <div className={styles.root}>
@@ -24,12 +51,12 @@ export default function DashboardPage() {
         <div>
           <h1 className={styles.greeting}>Hi, {userData.firstName}</h1>
           <p className={styles.subtitle}>
-          You had participated in {userData.auctionCountEachMonth} auctions last month. Start your auction today.
+            You had participated in {userData.auctionCountEachMonth} auctions last month. Start your auction today.
           </p>
         </div>
       </header>
 
-      {/* Stats cards */}
+      {/* Stats cards (placeholder) */}
       <div className={styles.statsGrid}>
         {stats.map(s => (
           <div
@@ -54,14 +81,18 @@ export default function DashboardPage() {
                 <th>Product Name</th>
                 <th>Amount</th>
                 <th>Status</th>
-                <th>Auction Date</th>
+{/*                 <th>Auction Date</th> */}
+                <th>Bid Date</th>
+                <th>Bid Time</th>
+                <th>Auction End Date</th>
+                <th>Auction End Time</th>
               </tr>
             </thead>
             <tbody>
               {bids.map(row => (
                 <tr key={row.id}>
                   <td>{row.id}</td>
-                  <td>{row.product}</td>
+                  <td>{row.productName}</td>
                   <td>${row.amount.toLocaleString()}</td>
                   <td>
                     <span
@@ -74,14 +105,42 @@ export default function DashboardPage() {
                       {row.status}
                     </span>
                   </td>
-                  <td>{row.date}</td>
+                  <td>
+                    {row.bidTime && (
+                      <>
+                        <div>{row.bidTime.split('T')[0]}</div> {/* Date */}
+                      </>
+                    )}
+                  </td>
+                  <td>
+                    {row.bidTime && (
+                      <>
+                        <div>{row.bidTime.split('T')[1].split('.')[0]}</div> {/* Time */}
+                      </>
+                    )}
+                  </td>
+                 <td>
+                   {row.endTime && (
+                     <>
+                       <div>{row.endTime.split('T')[0]}</div> {/* Date */}
+                     </>
+                   )}
+                 </td>
+                 <td>
+                   {row.bidTime && (
+                     <>
+                       <div>{row.endTime.split('T')[1].split('.')[0]}</div> {/* Time */}
+                     </>
+                   )}
+                 </td>
+
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
 
-        {/* Pagination */}
+        {/* Pagination placeholder */}
         <div className={styles.pagination}>
           {Array.from({ length: pagination.total }, (_, i) => (
             <button
