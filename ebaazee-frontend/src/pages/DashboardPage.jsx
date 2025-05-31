@@ -5,12 +5,31 @@ import userData from '../data/UserProfile.json';
 import defaultAvatars from '../data/defaultAvatars.json';
 
 export default function DashboardPage() {
-//   const {stats, bids, pagination } = data;
+  const [firstName, setFirstName] = useState('');
   const [avatar, setAvatar] = useState(userData.avatarUrl);
   const [bids, setBids] = useState([]);
   const [pagination, setPagination] = useState({ current: 1, total: 1 }); // Placeholder
   const [stats, setStats] = useState([]); // Placeholder
 
+
+    useEffect(() => {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+      fetch('http://localhost:9090/api/user/profile', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      .then(res => {
+        if (!res.ok) throw new Error('Network error');
+        return res.json();
+      })
+      .then(data => {
+        setFirstName(data.firstName);
+      })
+      .catch(() => console.log("error"));
+    }, []);
+  
   useEffect(() => {
     const isPlaceholder = avatar === userData.avatarUrl;
     if (isPlaceholder) {
@@ -49,7 +68,7 @@ export default function DashboardPage() {
       <header className={styles.header}>
         <img src={avatar} alt="Avatar" className={styles.avatar} />
         <div>
-          <h1 className={styles.greeting}>Hi, {userData.firstName}</h1>
+          <h1 className={styles.greeting}>Hi, {firstName}</h1>
           <p className={styles.subtitle}>
             You had participated in {userData.auctionCountEachMonth} auctions last month. Start your auction today.
           </p>
