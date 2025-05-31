@@ -5,7 +5,6 @@ import listStyles from "../css/ListingSection.module.css";
 import walletData from "../data/UserProfile.json";
 import { useSection } from '../context/SectionContext';
 
-
 // Countdown timer for product endTime
 function CountdownTimer({ endTime }) {
   const [timeLeft, setTimeLeft] = useState(getTimeLeft());
