@@ -13,6 +13,26 @@ export default function SettingsPage() {
   const [phone, setPhone]         = useState(userData.phone);
 
   useEffect(() => {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+      fetch('http://localhost:9090/api/user/profile', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+      .then(res => {
+        if (!res.ok) throw new Error('Network error');
+        return res.json();
+      })
+      .then(data => {
+        setFirstName(data.firstName);
+        setLastName(data.lastName);
+        setEmail(data.username);
+      })
+      .catch(() => console.log("error"));
+    }, []);
+
+  useEffect(() => {
     const isPlaceholder = avatar === userData.avatarUrl;
     if (isPlaceholder) {
       const randomIndex = Math.floor(Math.random() * defaultAvatars.length);
