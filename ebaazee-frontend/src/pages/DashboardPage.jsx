@@ -70,7 +70,7 @@ export default function DashboardPage() {
         <div>
           <h1 className={styles.greeting}>Hi, {firstName}</h1>
           <p className={styles.subtitle}>
-            You had participated in {userData.auctionCountEachMonth} auctions last month. Start your auction today.
+            You had participated in {bids.length} auctions. Start your auction today.
           </p>
         </div>
       </header>
