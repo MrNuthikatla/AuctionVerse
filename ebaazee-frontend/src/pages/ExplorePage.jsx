@@ -3,7 +3,8 @@ import filterOptions from "../data/filters.json";
 import styles from "../css/ExplorePage.module.css";
 import listStyles from "../css/ListingSection.module.css";
 import walletData from "../data/UserProfile.json";
-import { useSection } from './context/SectionContext';
+import { useSection } from '../context/SectionContext';
+
 
 // Countdown timer for product endTime
 function CountdownTimer({ endTime }) {
