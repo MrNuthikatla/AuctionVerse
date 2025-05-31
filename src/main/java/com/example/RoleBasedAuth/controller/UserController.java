@@ -8,6 +8,7 @@ import com.example.RoleBasedAuth.repository.UserRepository;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +34,7 @@ public class UserController {
     private UserRepository userRepository;
 
     @GetMapping("/my-bids")
+    @PreAuthorize("hasAuthority('BUYER')")
     public ResponseEntity<?> getMyBids(@AuthenticationPrincipal User user) {
         List<BidDTO> myBids = bidRepository.findByBidder(user)
             .stream()
