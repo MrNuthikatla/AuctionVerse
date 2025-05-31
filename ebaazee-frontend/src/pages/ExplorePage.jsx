@@ -81,7 +81,6 @@ export default function ExplorePage() {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [bidAmount, setBidAmount] = useState("");
   const [feedback, setFeedback] = useState("");
-  const [bidPlaced, setBidPlaced] = useState(false);
 
   // Carousel state
   const [current, setCurrent] = useState(0);
@@ -203,7 +202,6 @@ export default function ExplorePage() {
     setBidAmount("");
     setFeedback("");
     setModalOpen(true);
-    setBidPlaced(false);
   };
   const closeBidModal = () => setModalOpen(false);
 
@@ -237,7 +235,8 @@ export default function ExplorePage() {
         setFeedback(
             "✅ Your bid was placed successfully! Head to My Auctions to check its status."
         );
-        setBidPlaced(true);
+        closeBidModal();
+        setSection("payment");
       } else {
         setFeedback(`⚠️ ${text}`);
       }
@@ -245,12 +244,6 @@ export default function ExplorePage() {
       setFeedback("⚠️ Failed to place bid.");
     }
   };
-
-  //Context logic
-  const handleCheckout = () => {
-    closeBidModal();
-    setSection('payment');
-  }
 
   // Status logic
   function getStatus(product) {
@@ -523,7 +516,6 @@ export default function ExplorePage() {
                       value={bidAmount}
                       onChange={(e) => setBidAmount(e.target.value)}
                       placeholder="Enter higher than current bid"
-                      disabled={bidPlaced}
                   />
                 </div>
 
@@ -540,18 +532,9 @@ export default function ExplorePage() {
                 )}
 
                 <div className={styles.modalActions}>
-                  {!bidPlaced ? (                                
-                    <button onClick={placeBid} className="btn">
-                      Place Bid
-                    </button>
-                  ) : (                                          
-                    <button
-                      onClick={handleCheckout}
-                      className="btn"
-                    >
-                      Checkout
-                    </button>
-                  )}
+                  <button onClick={placeBid} className="btn">
+                    Place Bid
+                  </button>
                 </div>
               </div>
             </div>
