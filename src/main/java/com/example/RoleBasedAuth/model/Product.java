@@ -38,7 +38,7 @@ public class Product {
 
     private double minBid;
 
-    private double currentBid;
+    private Double currentBid;
 
     @ManyToOne
     @JoinColumn(name = "seller_id", nullable = false)

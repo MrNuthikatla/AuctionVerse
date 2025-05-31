@@ -88,7 +88,7 @@ public class BidController {
         bidRepository.save(bid);
 
         // Update product current bid
-        product.setCurrentBid(bidAmount);
+        product.setCurrentBid(Double.valueOf(bidAmount));
         productRepository.save(product);
 
         return ResponseEntity.ok("Bid placed successfully.");
