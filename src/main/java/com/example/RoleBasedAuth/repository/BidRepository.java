@@ -17,6 +17,8 @@ public interface BidRepository extends JpaRepository<Bid, Integer> {
 
     Optional<Bid> findTopByProductOrderByAmountDesc(Product product);
 
+    Optional<Bid> findTopByProductIdOrderByAmountDesc(Integer productId);
+
     long countByProduct(Product product);
 
     Optional<Bid> findByBidderAndProduct(User bidder, Product product);
