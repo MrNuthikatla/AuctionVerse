@@ -414,7 +414,6 @@ export default function ExplorePage() {
                   onChange={(e) => setSales(e.target.value)}
                   className={listStyles.filterSelect}
               >
-                <option value="all">All</option>
                 {filterOptions.sales.map((opt) => (
                     <option key={opt.value} value={opt.value}>
                       {opt.label}
