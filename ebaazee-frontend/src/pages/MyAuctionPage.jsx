@@ -46,6 +46,7 @@ export default function MyAuctionsPage() {
   const now = new Date();
 
   const classifyBids = (bids) => {
+    console.log(bids)
     if (!userId) return { inProgress: [], won: [], closed: [], all: [] };
     return {
       inProgress: bids.filter(

@@ -4,6 +4,17 @@ import styles from "../css/ExplorePage.module.css";
 import listStyles from "../css/ListingSection.module.css";
 import walletData from "../data/UserProfile.json";
 import { useSection } from '../context/SectionContext';
+import appliances from '../assets/categories/appliances.jpg';
+import automotive from '../assets/categories/automotive.jpg';
+import beauty from '../assets/categories/beauty.jpg';
+import books from '../assets/categories/books.jpg';
+import electronics from '../assets/categories/electronics.jpg';
+import fashion from '../assets/categories/fashion.jpg';
+import garden from '../assets/categories/garden.jpg';
+import music from '../assets/categories/music.jpg';
+import sports from '../assets/categories/sports.jpg';
+import toys from '../assets/categories/toys.jpg';
+import defaultImg from '../assets/categories/all.jpg';
 
 // Countdown timer for product endTime
 function CountdownTimer({ endTime }) {
@@ -95,6 +106,22 @@ export default function ExplorePage() {
   //Context state
   const { setSection } = useSection();
 
+  const categoryImageMap = {
+    HOME_APPLIANCES: appliances,
+    AUTOMOTIVE: automotive,
+    BEAUTY: beauty,
+    BOOKS: books,
+    ELECTRONICS: electronics,
+    FASHION: fashion,
+    GARDEN: garden,
+    MUSIC: music,
+    SPORTS: sports,
+    TOYS: toys,
+    DEFAULT: defaultImg,
+  };
+
+  const getCategoryImage = (cat) => categoryImageMap[cat.toUpperCase()] || categoryImageMap.DEFAULT;
+
   // Fetch categories from backend and add "All"
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -109,15 +136,10 @@ export default function ExplorePage() {
           const mapped = data.map((cat) => ({
             value: cat,
             label: cat.charAt(0).toUpperCase() + cat.slice(1).toLowerCase(),
-            image:
-                cat === "ELECTRONICS"
-                    ? "/images/electronics.png"
-                    : cat === "FASHION"
-                        ? "/images/fashion.png"
-                        : "/images/default.png",
+            image: getCategoryImage(cat)
           }));
           setCategories([
-            { value: "ALL", label: "All", image: "/images/default.png" },
+            { value: "ALL", label: "All", image: getCategoryImage("DEFAULT") },
             ...mapped,
           ]);
           setActiveCategory("ALL");
