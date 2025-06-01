@@ -1,6 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import styles from '../css/MyAuctionPage.module.css';
 import { jwtDecode } from 'jwt-decode';
+import appliances from '../assets/categories/appliances.jpg';
+import automotive from '../assets/categories/automotive.jpg';
+import beauty from '../assets/categories/beauty.jpg';
+import books from '../assets/categories/books.jpg';
+import electronics from '../assets/categories/electronics.jpg';
+import fashion from '../assets/categories/fashion.jpg';
+import garden from '../assets/categories/garden.jpg';
+import music from '../assets/categories/music.jpg';
+import sports from '../assets/categories/sports.jpg';
+import toys from '../assets/categories/toys.jpg';
+import defaultImg from '../assets/categories/all.jpg';
 
 const TABS = [
   { key: 'inProgress', label: 'In-Progress Bids' },
@@ -23,6 +34,20 @@ export default function MyAuctionsPage() {
     }
   }, []);
 
+  const categoryImageMap = {
+    HOME_APPLIANCES: appliances,
+    AUTOMOTIVE: automotive,
+    BEAUTY: beauty,
+    BOOKS: books,
+    ELECTRONICS: electronics,
+    FASHION: fashion,
+    GARDEN: garden,
+    MUSIC: music,
+    SPORTS: sports,
+    TOYS: toys,
+    DEFAULT: defaultImg,
+  };
+
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token || !userId) return;
@@ -36,8 +61,25 @@ export default function MyAuctionsPage() {
           if (!res.ok) throw new Error('Network error');
           return res.json();
         })
-        .then(data => {
-          setBids(data);
+        .then(async data => {
+          const enrichedBids = await Promise.all(
+            data.map(async bid => {
+              try {
+                const res = await fetch(`http://localhost:9090/api/products/${bid.productId}`, {
+                  headers: {
+                    'Authorization': `Bearer ${token}`
+                  }
+                });
+                const product = await res.json();
+                const category = product.category?.toUpperCase() || "DEFAULT";
+                const productImage = categoryImageMap[category] || categoryImageMap["DEFAULT"];
+                return { ...bid, productImage };
+              } catch (err) {
+                return { ...bid, productImage: categoryImageMap["DEFAULT"] };
+              }
+            })
+          );
+          setBids(enrichedBids);
           setLoading(false);
         })
         .catch(() => setLoading(false));
