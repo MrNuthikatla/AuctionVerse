@@ -1,68 +1,103 @@
-.container {
-  padding: 2rem;
-  background: #fafafa;
-  min-height: 100vh;
-  box-sizing: border-box;
+.adminContainer {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #fff;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
 }
 
-.header {
+.adminHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 30px;
 }
 
-.logoutBtn {
-  background: #dc3545;
+.adminHeader h1 {
+  font-weight: 700;
+  color: #333;
+}
+
+.btn {
+  cursor: pointer;
+  padding: 10px 20px;
+  background-color: #1a73e8;
   border: none;
   color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  cursor: pointer;
-}
-.logoutBtn:hover {
-  background: #c82333;
+  border-radius: 5px;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
 }
 
-.table {
-  width: 100%;
-  border-collapse: collapse;
-  background: white;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.table th,
-.table td {
-  border: 1px solid #ddd;
-  padding: 0.75rem;
-  text-align: left;
-}
-
-.currentStatus {
-  text-transform: capitalize;
-}
-
-.select {
-  padding: 0.4rem;
-  border-radius: 4px;
-  border: 1px solid #ccc;
-}
-
-.headerButtons {
-  display: flex;
-  gap: 10px;
-  align-items: center;
+.btn:hover {
+  background-color: #155ab6;
 }
 
 .reportBtn {
-  padding: 8px 16px;
-  background-color: #007bff;
-  border: none;
-  color: white;
-  border-radius: 4px;
-  cursor: pointer;
+  font-size: 16px;
 }
 
-.reportBtn:hover {
-  background-color: #0056b3;
+.filters {
+  display: flex;
+  gap: 30px;
+  margin-bottom: 30px;
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.filterGroup label {
+  margin-bottom: 6px;
+  font-weight: 600;
+  color: #555;
+}
+
+.filterGroup select {
+  padding: 8px 12px;
+  font-size: 16px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  min-width: 160px;
+}
+
+.productTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.productTable th,
+.productTable td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+  vertical-align: middle;
+}
+
+.statusBadge {
+  color: white;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: inline-block;
+  text-transform: uppercase;
+}
+
+.freezeBtn {
+  background-color: #ff9800;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+
+.freezeBtn:hover {
+  background-color: #e68900;
 }
