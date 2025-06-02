@@ -101,3 +101,17 @@
 .freezeBtn:hover {
   background-color: #e68900;
 }
+
+.headerActions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.logoutBtn {
+  background-color: #f44336;
+}
+
+.logoutBtn:hover {
+  background-color: #d32f2f;
+}

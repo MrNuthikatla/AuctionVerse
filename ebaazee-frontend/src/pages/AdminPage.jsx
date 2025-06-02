@@ -101,6 +101,11 @@ const AdminPage = () => {
     }
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    window.location.href = '/login';
+  };
+
   const statusColors = {
     ACTIVE: '#4caf50', // Green
     FROZEN: '#ff9800', // Orange
@@ -112,9 +117,14 @@ const AdminPage = () => {
       <div className={styles.adminContainer}>
         <header className={styles.adminHeader}>
           <h1>Admin Page</h1>
-          <button className={`${styles.btn} ${styles.reportBtn}`} onClick={downloadReport}>
-            Download Report
-          </button>
+          <div className={styles.headerActions}>
+            <button className={`${styles.btn} ${styles.reportBtn}`} onClick={downloadReport}>
+              Download Report
+            </button>
+            <button className={`${styles.btn} ${styles.logoutBtn}`} onClick={handleLogout}>
+              Logout
+            </button>
+          </div>
         </header>
 
         <section className={styles.filters}>
@@ -166,7 +176,7 @@ const AdminPage = () => {
           <tbody>
           {filteredProducts.length === 0 ? (
               <tr>
-                <td colSpan="9" style={{ textAlign: 'center', padding: '20px' }}>
+                <td colSpan="9" style={{textAlign: 'center', padding: '20px'}}>
                   No products found.
                 </td>
               </tr>
@@ -186,7 +196,7 @@ const AdminPage = () => {
                     <td>
                   <span
                       className={styles.statusBadge}
-                      style={{ backgroundColor: statusColors[getStatus(product)] }}
+                      style={{backgroundColor: statusColors[getStatus(product)]}}
                   >
                     {getStatus(product)}
                   </span>
@@ -201,7 +211,7 @@ const AdminPage = () => {
                             Freeze
                           </button>
                       ) : (
-                          <span style={{ color: '#888' }}>N/A</span>
+                          <span style={{color: '#888'}}>N/A</span>
                       )}
                     </td>
                   </tr>
