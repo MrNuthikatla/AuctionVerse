@@ -1,106 +1,216 @@
-// src/pages/AdminPage.jsx
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useProducts } from '../context/ProductsContext';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import styles from '../css/AdminPage.module.css';
 
-export default function AdminPage() {
-  const { products, updateStatus } = useProducts();
-  const navigate = useNavigate();
+const AdminPage = () => {
+  const [categories, setCategories] = useState([]);
+  const [products, setProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState('');
 
-  const handleLogout = () => {
-    localStorage.removeItem('isLoggedIn');
-    localStorage.removeItem('adminLoggedIn');
-    navigate('/login', { replace: true });
-  };
+  const token = localStorage.getItem('token');
 
-  const handleDownloadReport = async () => {
+  useEffect(() => {
+    fetchCategories();
+    fetchProducts();
+  }, []);
+
+  useEffect(() => {
+    applyFilters();
+  }, [products, selectedCategory, selectedStatus]);
+
+  const fetchCategories = async () => {
     try {
-      const response = await fetch('http://localhost:9090/api/admin/products/report', {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-          // Add Authorization header here if your API requires auth
-          'Authorization': 'Bearer ' + localStorage.getItem('token')
-        }
+      const res = await axios.get('http://localhost:9090/api/categories', {
+        headers: { Authorization: `Bearer ${token}` },
       });
-
-      if (!response.ok) throw new Error('Failed to download file');
-      const blob = await response.blob();
-
-      if ('showSaveFilePicker' in window) {
-        const opts = {
-          suggestedName: 'Product_Report.xlsx',
-          types: [
-            {
-              description: 'Excel Workbook',
-              accept: {
-                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx']
-              }
-            }
-          ]
-        };
-
-        const handle = await window.showSaveFilePicker(opts);
-        const writable = await handle.createWritable();
-        await writable.write(blob);
-        await writable.close();
-      } else {
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.setAttribute('download', 'Product_Report.xlsx');
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-      }
-    } catch (err) {
-      console.error('Download error:', err);
-      alert('Failed to download the report.');
+      setCategories(res.data);
+    } catch (error) {
+      console.error('Error fetching categories:', error);
     }
   };
 
-  return (
-    <div className={styles.container}>
-      <header className={styles.header}>
-        <h1>Admin: Manage Auction Status</h1>
-        <div className={styles.headerButtons}>
-          <button className={styles.reportBtn} onClick={handleDownloadReport}>
-            Download Product Report
-          </button>
-          <button className={styles.logoutBtn} onClick={handleLogout}>
-            Logout
-          </button>
-        </div>
-      </header>
+  const fetchProducts = async () => {
+    try {
+      const res = await axios.get('http://localhost:9090/api/admin/products', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setProducts(res.data);
+    } catch (error) {
+      console.error('Error fetching products:', error);
+    }
+  };
 
-      <table className={styles.table}>
-        <thead>
+  // Determine product status based on isSold and isFrozen
+  const getStatus = (product) => {
+    if (product.sold && product.frozen) return 'SOLD';
+    if (!product.sold && product.frozen) return 'FROZEN';
+    if (!product.sold && !product.frozen) return 'ACTIVE';
+    return 'UNKNOWN';
+  };
+
+  const applyFilters = () => {
+    let filtered = [...products];
+    if (selectedCategory) {
+      filtered = filtered.filter((p) => p.category === selectedCategory);
+    }
+    if (selectedStatus) {
+      filtered = filtered.filter(
+          (p) => getStatus(p) === selectedStatus.toUpperCase()
+      );
+    }
+    setFilteredProducts(filtered);
+  };
+
+  const handleFreeze = async (productId) => {
+    try {
+      await axios.post(
+          `http://localhost:9090/api/admin/products/${productId}/state`,
+          { isFrozen: true },
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+      );
+      fetchProducts();
+    } catch (error) {
+      console.error('Error freezing product:', error);
+    }
+  };
+
+  const downloadReport = async () => {
+    try {
+      const res = await axios.get(
+          'http://localhost:9090/api/admin/products/report',
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            responseType: 'blob',
+          }
+      );
+      const url = window.URL.createObjectURL(new Blob([res.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'product_report.csv');
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.error('Error downloading report:', error);
+    }
+  };
+
+  const statusColors = {
+    ACTIVE: '#4caf50', // Green
+    FROZEN: '#ff9800', // Orange
+    SOLD: '#9e9e9e',   // Gray
+    UNKNOWN: '#f44336' // Red
+  };
+
+  return (
+      <div className={styles.adminContainer}>
+        <header className={styles.adminHeader}>
+          <h1>Admin Page</h1>
+          <button className={`${styles.btn} ${styles.reportBtn}`} onClick={downloadReport}>
+            Download Report
+          </button>
+        </header>
+
+        <section className={styles.filters}>
+          <div className={styles.filterGroup}>
+            <label htmlFor="category-select">Filter by Category:</label>
+            <select
+                id="category-select"
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+            >
+              <option value="">All</option>
+              {categories.map((cat) => (
+                  <option key={cat} value={cat}>
+                    {cat.replace('_', ' ')}
+                  </option>
+              ))}
+            </select>
+          </div>
+
+          <div className={styles.filterGroup}>
+            <label htmlFor="status-select">Filter by Status:</label>
+            <select
+                id="status-select"
+                value={selectedStatus}
+                onChange={(e) => setSelectedStatus(e.target.value)}
+            >
+              <option value="">All</option>
+              <option value="ACTIVE">Active</option>
+              <option value="FROZEN">Frozen</option>
+              <option value="SOLD">Sold</option>
+            </select>
+          </div>
+        </section>
+
+        <table className={styles.productTable}>
+          <thead>
           <tr>
-            <th>Item</th>
-            <th>Current Status</th>
-            <th>Change To…</th>
+            <th>Id</th>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Category</th>
+            <th>Seller</th>
+            <th>Current Bid</th>
+            <th>Status</th>
+            <th>End Time</th>
+            <th>Actions</th>
           </tr>
-        </thead>
-        <tbody>
-          {products.map(p => (
-            <tr key={p.id}>
-              <td>{p.title}</td>
-              <td>{p.status}</td>
-              <td>
-                <select
-                  value={p.status}
-                  onChange={e => updateStatus(p.id, e.target.value)}
-                >
-                  <option value="active">Active</option>
-                  <option value="frozen">Frozen</option>
-                  <option value="sold">Sold</option>
-                </select>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody>
+          {filteredProducts.length === 0 ? (
+              <tr>
+                <td colSpan="9" style={{ textAlign: 'center', padding: '20px' }}>
+                  No products found.
+                </td>
+              </tr>
+          ) : (
+              filteredProducts.map((product) => (
+                  <tr key={product.id}>
+                    <td>{product.id}</td>
+                    <td>{product.name || product.description || 'N/A'}</td>
+                    <td>{product.description}</td>
+                    <td>{product.category.replace('_', ' ')}</td>
+                    <td>
+                      {product.seller
+                          ? `${product.seller.firstName} ${product.seller.lastName}`
+                          : 'N/A'}
+                    </td>
+                    <td>{product.currentBid?.toLocaleString() || 0}</td>
+                    <td>
+                  <span
+                      className={styles.statusBadge}
+                      style={{ backgroundColor: statusColors[getStatus(product)] }}
+                  >
+                    {getStatus(product)}
+                  </span>
+                    </td>
+                    <td>{new Date(product.endTime).toLocaleString()}</td>
+                    <td>
+                      {getStatus(product) === 'ACTIVE' ? (
+                          <button
+                              className={styles.freezeBtn}
+                              onClick={() => handleFreeze(product.id)}
+                          >
+                            Freeze
+                          </button>
+                      ) : (
+                          <span style={{ color: '#888' }}>N/A</span>
+                      )}
+                    </td>
+                  </tr>
+              ))
+          )}
+          </tbody>
+        </table>
+      </div>
   );
-}
+};
+
+export default AdminPage;
