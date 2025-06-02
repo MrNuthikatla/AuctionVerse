@@ -2,19 +2,19 @@ import React, { useState, useRef, useEffect } from "react";
 import filterOptions from "../data/filters.json";
 import styles from "../css/ExplorePage.module.css";
 import listStyles from "../css/ListingSection.module.css";
-import walletData from "../data/UserProfile.json";
-import { useSection } from '../context/SectionContext';
-import appliances from '../assets/categories/appliances.jpg';
-import automotive from '../assets/categories/automotive.jpg';
-import beauty from '../assets/categories/beauty.jpg';
-import books from '../assets/categories/books.jpg';
-import electronics from '../assets/categories/electronics.jpg';
-import fashion from '../assets/categories/fashion.jpg';
-import garden from '../assets/categories/garden.jpg';
-import music from '../assets/categories/music.jpg';
-import sports from '../assets/categories/sports.jpg';
-import toys from '../assets/categories/toys.jpg';
-import defaultImg from '../assets/categories/all.jpg';
+import { useSection } from "../context/SectionContext";
+
+import appliances from "../assets/categories/appliances.jpg";
+import automotive from "../assets/categories/automotive.jpg";
+import beauty from "../assets/categories/beauty.jpg";
+import books from "../assets/categories/books.jpg";
+import electronics from "../assets/categories/electronics.jpg";
+import fashion from "../assets/categories/fashion.jpg";
+import garden from "../assets/categories/garden.jpg";
+import music from "../assets/categories/music.jpg";
+import sports from "../assets/categories/sports.jpg";
+import toys from "../assets/categories/toys.jpg";
+import defaultImg from "../assets/categories/all.jpg";
 
 // Countdown timer for product endTime
 function CountdownTimer({ endTime }) {
@@ -62,7 +62,7 @@ function CountdownTimer({ endTime }) {
 }
 
 export default function ExplorePage() {
-  // Carousel static data
+  // ─── Carousel static data ───────────────────────────────────────────
   const [carouselItems] = useState([
     {
       id: 1,
@@ -78,7 +78,7 @@ export default function ExplorePage() {
     },
   ]);
 
-  // Categories and listings from backend
+  // ─── Categories & listings ─────────────────────────────────────────
   const [categories, setCategories] = useState([
     { value: "ALL", label: "All", image: "/images/default.png" },
   ]);
@@ -87,25 +87,38 @@ export default function ExplorePage() {
   const [activeCategory, setActiveCategory] = useState("ALL");
   const [sales, setSales] = useState("all");
 
-  // Modal state
+  // ─── Modal state ────────────────────────────────────────────────────
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [bidAmount, setBidAmount] = useState("");
   const [feedback, setFeedback] = useState("");
 
-  // Carousel state
+  // ─── Fetch bid status for modal ─────────────────────────────────────
+  const [bidStatus, setBidStatus] = useState({
+    totalBidders: 0,
+    averageBidAmount: 0,
+    maxBidAmount: 0,
+    hasUserBid: false,
+    userBidAmount: 0,
+  });
+
+  // ─── Profile (for “Hi, FirstName”) ─────────────────────────────────
+  const [firstName, setFirstName] = useState("");
+
+  // ─── Carousel state ─────────────────────────────────────────────────
   const [current, setCurrent] = useState(0);
   const scrollRef = useRef(null);
   const didMountMain = useRef(false);
 
-  // Category carousel state
+  // ─── Category carousel state ────────────────────────────────────────
   const [catIndex, setCatIndex] = useState(0);
   const catRef = useRef(null);
   const didMountCat = useRef(false);
 
-  //Context state
+  // ─── Context ────────────────────────────────────────────────────────
   const { setSection } = useSection();
 
+  // ─── Category ↔ image mapping ────────────────────────────────────────
   const categoryImageMap = {
     HOME_APPLIANCES: appliances,
     AUTOMOTIVE: automotive,
@@ -119,10 +132,28 @@ export default function ExplorePage() {
     TOYS: toys,
     DEFAULT: defaultImg,
   };
+  const getCategoryImage = (cat) =>
+      categoryImageMap[cat.toUpperCase()] || categoryImageMap.DEFAULT;
 
-  const getCategoryImage = (cat) => categoryImageMap[cat.toUpperCase()] || categoryImageMap.DEFAULT;
+  // ─── Fetch User Profile on mount ────────────────────────────────────
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    fetch("http://localhost:9090/api/user/profile", {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+        .then((res) => {
+          if (!res.ok) throw new Error("Unauthorized");
+          return res.json();
+        })
+        .then((data) => {
+          setFirstName(data.firstName);
+        })
+        .catch((err) => {
+          console.error("Error fetching profile:", err);
+        });
+  }, []);
 
-  // Fetch categories from backend and add "All"
+  // ─── Fetch categories (prepend “All”) ───────────────────────────────
   useEffect(() => {
     const token = localStorage.getItem("token");
     fetch("http://localhost:9090/api/categories", {
@@ -136,7 +167,7 @@ export default function ExplorePage() {
           const mapped = data.map((cat) => ({
             value: cat,
             label: cat.charAt(0).toUpperCase() + cat.slice(1).toLowerCase(),
-            image: getCategoryImage(cat)
+            image: getCategoryImage(cat),
           }));
           setCategories([
             { value: "ALL", label: "All", image: getCategoryImage("DEFAULT") },
@@ -144,10 +175,10 @@ export default function ExplorePage() {
           ]);
           setActiveCategory("ALL");
         })
-        .catch(console.error);
+        .catch((err) => console.error("Error fetching categories:", err));
   }, []);
 
-  // Fetch products, do not filter by category if "All" is selected
+  // ─── Fetch products (filtered by category) ──────────────────────────
   useEffect(() => {
     const token = localStorage.getItem("token");
     const url =
@@ -170,10 +201,10 @@ export default function ExplorePage() {
           }));
           setListings(mapped);
         })
-        .catch(console.error);
+        .catch((err) => console.error("Error fetching products:", err));
   }, [activeCategory]);
 
-  // Carousel scroll effect
+  // ─── Main carousel scroll effect ───────────────────────────────────
   useEffect(() => {
     const container = scrollRef.current;
     const slide = container?.children[current];
@@ -189,7 +220,7 @@ export default function ExplorePage() {
   const next = () =>
       setCurrent((i) => Math.min(carouselItems.length - 1, i + 1));
 
-  // Category carousel scroll
+  // ─── Category carousel scroll (on click) ──────────────────────────
   const scrollToCategory = (i) => {
     const container = catRef.current;
     const node = container?.children[i];
@@ -218,17 +249,53 @@ export default function ExplorePage() {
         return ni;
       });
 
-  // Modal functions
+  // ─── Modal open/close ───────────────────────────────────────────────
   const openBidModal = (product) => {
     setSelectedProduct(product);
     setBidAmount("");
     setFeedback("");
     setModalOpen(true);
+    fetchBidStatus(product.productId);
   };
   const closeBidModal = () => setModalOpen(false);
 
-  // Place bid API integration
-  const placeBid = async () => {
+  // ─── Fetch “/api/bids/status/{productId}” ──────────────────────────
+  const fetchBidStatus = async (productId) => {
+    const token = localStorage.getItem("token");
+    try {
+      const res = await fetch(
+          `http://localhost:9090/api/bids/status/${productId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+      );
+      if (!res.ok) {
+        throw new Error("Failed to fetch bid status");
+      }
+      const data = await res.json();
+      setBidStatus({
+        totalBidders: data.totalBidders,
+        averageBidAmount: data.averageBidAmount,
+        maxBidAmount: data.maxBidAmount,
+        hasUserBid: data.hasUserBid,
+        userBidAmount: data.userBidAmount,
+      });
+    } catch (err) {
+      console.error("Error fetching bid status:", err);
+      setBidStatus({
+        totalBidders: 0,
+        averageBidAmount: 0,
+        maxBidAmount: 0,
+        hasUserBid: false,
+        userBidAmount: 0,
+      });
+    }
+  };
+
+  // ─── (Removed old placeBid() entirely) ─────────────────────────────
+
+  // ─── New: when user clicks “Proceed to Payment” ────────────────────
+  const handleProceedToPayment = () => {
     if (!selectedProduct) return;
     const amt = parseFloat(bidAmount);
     if (isNaN(amt) || amt <= selectedProduct.currentBid) {
@@ -241,33 +308,19 @@ export default function ExplorePage() {
       );
       return;
     }
-    const token = localStorage.getItem("token");
-    try {
-      const res = await fetch(
-          `http://localhost:9090/api/bids/place/${selectedProduct.productId}?bidAmount=${amt}`,
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-      );
-      const text = await res.text();
-      if (res.ok) {
-        setFeedback(
-            "✅ Your bid was placed successfully! Head to My Auctions to check its status."
-        );
-        closeBidModal();
-        setSection("payment");
-      } else {
-        setFeedback(`⚠️ ${text}`);
-      }
-    } catch (e) {
-      setFeedback("⚠️ Failed to place bid.");
-    }
+
+    localStorage.setItem(
+        "pendingBid",
+        JSON.stringify({
+          productId: selectedProduct.productId,
+          bidAmount: amt,
+        })
+    );
+    setModalOpen(false);
+    setSection("payment"); // ← switch to “payment” section
   };
 
-  // Status logic
+  // ─── Determine product status ───────────────────────────────────────
   function getStatus(product) {
     if (product.sold) return "sold";
     if (product.frozen) return "frozen";
@@ -275,12 +328,11 @@ export default function ExplorePage() {
     return "active";
   }
 
-  // Filter listings by status and category and search
+  // ─── Apply filters (status, category, search) ──────────────────────
   const filteredListings = listings.filter((item) => {
     const statusMatch =
         sales.toLowerCase() === "all" ? true : getStatus(item) === sales.toLowerCase();
-    const categoryMatch =
-        activeCategory === "ALL" ? true : item.category === activeCategory;
+    const categoryMatch = activeCategory === "ALL" ? true : item.category === activeCategory;
     const searchMatch =
         !searchText ||
         item.productName.toLowerCase().includes(searchText.toLowerCase());
@@ -294,7 +346,7 @@ export default function ExplorePage() {
 
   return (
       <div className={styles.root}>
-        {/* 1. Top Bar */}
+        {/* ─── 1. Top Bar ────────────────────────────────────────────────── */}
         <div className={styles.topBar}>
           <div className={styles.search}>
             <input
@@ -305,10 +357,14 @@ export default function ExplorePage() {
                 className={styles.searchInput}
             />
           </div>
-          <div className={styles.wallet}>${walletData.wallet}</div>
+
+          {/* 👋 “Hi, FirstName” with styled background */}
+          <div className={styles.greeting}>
+            Hi, <span className={styles.username}>{firstName || "User"}</span>
+          </div>
         </div>
 
-        {/* 2. Main Carousel */}
+        {/* ─── 2. Main Carousel ───────────────────────────────────────────── */}
         <div className={styles.carouselWrapper}>
           <div className={styles.carouselScroll} ref={scrollRef}>
             {carouselItems.map((item) => (
@@ -355,7 +411,7 @@ export default function ExplorePage() {
           </div>
         </div>
 
-        {/* 3. Top Categories Carousel */}
+        {/* ─── 3. Top Categories Carousel ────────────────────────────────── */}
         <section className={styles.categorySection}>
           <h2 className={styles.categoryHeading}>Top Categories</h2>
           <div className={styles.categoryCarouselWrapper}>
@@ -402,11 +458,11 @@ export default function ExplorePage() {
           </div>
         </section>
 
-        {/* 4. Listing Section */}
+        {/* ─── 4. Listing Section ─────────────────────────────────────────── */}
         <div className={listStyles.listingWrapper}>
           {/* Sidebar Filters */}
           <aside className={listStyles.sidebar}>
-            {/* Status */}
+            {/* Status Filter */}
             <div className={listStyles.filterGroup}>
               <label className={listStyles.filterTitle}>Status</label>
               <select
@@ -422,7 +478,7 @@ export default function ExplorePage() {
               </select>
             </div>
 
-            {/* Category */}
+            {/* Category Filter */}
             <div className={listStyles.filterGroup}>
               <label className={listStyles.filterTitle}>Category</label>
               <select
@@ -442,7 +498,6 @@ export default function ExplorePage() {
             <button className={listStyles.applyButton} onClick={resetFilters}>
               Reset
             </button>
-
           </aside>
 
           {/* Results Grid */}
@@ -468,9 +523,7 @@ export default function ExplorePage() {
                         className={
                           getStatus(item) === "active"
                               ? listStyles.badgeLive
-                              : getStatus(item) === "sold"
-                                  ? listStyles.badgeUpcoming
-                                  : listStyles.badgeUpcoming
+                              : listStyles.badgeUpcoming
                         }
                     >
                       {getStatus(item).toUpperCase()}
@@ -504,7 +557,7 @@ export default function ExplorePage() {
           </section>
         </div>
 
-        {/* Bid Modal */}
+        {/* ─── 5. Bid Modal ─────────────────────────────────────────────────── */}
         {modalOpen && selectedProduct && (
             <div className={styles.modalOverlay} onClick={closeBidModal}>
               <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
@@ -512,17 +565,19 @@ export default function ExplorePage() {
                 <p>
                   <strong>Item:</strong> {selectedProduct.productName}
                 </p>
-                 <p className={styles.modalDescription}>
-                  <strong>Description:</strong>{selectedProduct.description || "No description available."}
+                <p className={styles.modalDescription}>
+                  <strong>Description:</strong>{" "}
+                  {selectedProduct.description || "No description available."}
                 </p>
+
                 <p>
                   <strong>Current Bid:</strong> ${selectedProduct.currentBid}
                 </p>
                 <p>
-                  <strong>Average Bid:</strong> ${selectedProduct.averageBid ?? '—'}
+                  <strong>Average Bid:</strong> ${bidStatus.averageBidAmount.toFixed(2)}
                 </p>
                 <p>
-                  <strong>Bidders:</strong> {selectedProduct.bidderCount ?? 0}
+                  <strong>Number of Bidders:</strong> {bidStatus.totalBidders}
                 </p>
                 <p>
                   <strong>Allowed Range:</strong> ${selectedProduct.minBid} – $
@@ -553,8 +608,8 @@ export default function ExplorePage() {
                 )}
 
                 <div className={styles.modalActions}>
-                  <button onClick={placeBid} className="btn">
-                    Place Bid
+                  <button onClick={handleProceedToPayment} className="btn">
+                    Proceed to Payment
                   </button>
                 </div>
               </div>

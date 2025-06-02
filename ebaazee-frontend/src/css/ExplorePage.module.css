@@ -481,6 +481,22 @@
   color: #555;
 }
 
+/* ─── Add this at the bottom of ExplorePage.module.css ───────────────── */
+
+.greeting {
+  background-color: #eef6fc;      /* light, neutral-blue background */
+  padding: 8px 16px;              /* space around “Hi, Name” */
+  border-radius: 20px;            /* pill-shaped container */
+  font-weight: 600;
+  color: #1a202c;                 /* dark text for contrast */
+  display: inline-block;          /* shrink to fit content */
+}
+
+.username {
+  margin-left: 4px;               /* small gap after “Hi,” */
+  color: #1a202c;
+}
+
 .section,
 .carouselWrapper,
 .categorySection,
@@ -489,3 +505,4 @@
   animation: fadeInUp 0.6s ease-out forwards;
   animation-delay: 0.2s; /* you can stagger via inline style or nth-child */
 }
+
