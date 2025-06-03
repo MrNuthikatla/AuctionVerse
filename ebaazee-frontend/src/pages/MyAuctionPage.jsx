@@ -1,3 +1,4 @@
+// src/pages/MyAuctionPage.jsx
 import React, { useState, useEffect } from 'react';
 import styles from '../css/MyAuctionPage.module.css';
 import { jwtDecode } from 'jwt-decode';
@@ -26,6 +27,7 @@ export default function MyAuctionsPage() {
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState(null);
 
+  // Decode JWT to get userId on mount
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
@@ -48,36 +50,36 @@ export default function MyAuctionsPage() {
     DEFAULT: defaultImg,
   };
 
+  // Fetch bids once userId is known
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token || !userId) return;
     setLoading(true);
+
     fetch('http://localhost:9090/api/user/my-bids', {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
+      headers: { 'Authorization': `Bearer ${token}` }
     })
         .then(res => {
           if (!res.ok) throw new Error('Network error');
           return res.json();
         })
         .then(async data => {
+          // Enrich each bid with a productImage
           const enrichedBids = await Promise.all(
-            data.map(async bid => {
-              try {
-                const res = await fetch(`http://localhost:9090/api/products/${bid.productId}`, {
-                  headers: {
-                    'Authorization': `Bearer ${token}`
-                  }
-                });
-                const product = await res.json();
-                const category = product.category?.toUpperCase() || "DEFAULT";
-                const productImage = categoryImageMap[category] || categoryImageMap["DEFAULT"];
-                return { ...bid, productImage };
-              } catch (err) {
-                return { ...bid, productImage: categoryImageMap["DEFAULT"] };
-              }
-            })
+              data.map(async bid => {
+                try {
+                  const res = await fetch(
+                      `http://localhost:9090/api/products/${bid.productId}`,
+                      { headers: { 'Authorization': `Bearer ${token}` } }
+                  );
+                  const product = await res.json();
+                  const category = product.category?.toUpperCase() || "DEFAULT";
+                  const productImage = categoryImageMap[category] || categoryImageMap["DEFAULT"];
+                  return { ...bid, productImage };
+                } catch (err) {
+                  return { ...bid, productImage: categoryImageMap["DEFAULT"] };
+                }
+              })
           );
           setBids(enrichedBids);
           setLoading(false);
@@ -87,24 +89,24 @@ export default function MyAuctionsPage() {
 
   const now = new Date();
 
+  // Classify based on bid.sold and bid.frozen (not isSold/isFrozen)
   const classifyBids = (bids) => {
-    if (!userId) return { inProgress: [], won: [], closed: [], all: [] };
+    if (!userId) {
+      return { inProgress: [], won: [], closed: [], all: [] };
+    }
     return {
-      inProgress: bids.filter(
-          bid =>
-              !bid.isSold &&
-              bid.endTime &&
-              new Date(bid.endTime) > now
+      inProgress: bids.filter(bid =>
+          !bid.sold &&            // not sold
+          !bid.frozen &&          // not frozen
+          bid.endTime &&
+          new Date(bid.endTime) > now
       ),
-      won: bids.filter(
-          bid =>
-              bid.isSold &&
-              bid.buyerId === userId
+      won: bids.filter(bid =>
+          bid.sold
       ),
-      closed: bids.filter(
-          bid =>
-              bid.isSold &&
-              bid.buyerId !== userId
+      closed: bids.filter(bid =>
+          !bid.sold &&            // not sold
+          bid.frozen              // but frozen (auction ended without sale)
       ),
       all: bids
     };
@@ -113,18 +115,10 @@ export default function MyAuctionsPage() {
   const classified = classifyBids(bids);
   const cards = classified[activeTab] || [];
 
-  const buttonText = (tab) => {
-    switch (tab) {
-      case 'inProgress': return 'Checkout';
-      case 'won':        return 'View';
-      case 'closed':     return 'View';
-      default:           return 'View';
-    }
-  };
-
   return (
       <div className={styles.root}>
         <h1 className={styles.heading}>My Auctions</h1>
+
         <nav className={styles.tabBar}>
           {TABS.map(tab => (
               <button
@@ -136,6 +130,7 @@ export default function MyAuctionsPage() {
               </button>
           ))}
         </nav>
+
         <div className={styles.cardsGrid}>
           {loading ? (
               <p>Loading...</p>
@@ -147,18 +142,25 @@ export default function MyAuctionsPage() {
                     <div className={styles.imageWrapper}>
                       <img
                           src={bid.productImage || '/images/default.png'}
-                          alt={bid.productName}
+                          alt={bid.productName || 'Product'}
                           className={styles.cardImage}
                       />
                       {activeTab === 'inProgress' && (
                           <span className={styles.badgeLive}>Active</span>
                       )}
+                      {activeTab === 'won' && (
+                          <span className={styles.badgeWon}>Won</span>
+                      )}
+                      {activeTab === 'closed' && (
+                          <span className={styles.badgeClosed}>Closed</span>
+                      )}
                     </div>
-                    <h3 className={styles.cardTitle}>{bid.productName}</h3>
+                    <h3 className={styles.cardTitle}>{bid.productName || 'Unnamed Product'}</h3>
                     <div className={styles.bidInfo}>
                       Your Bid: <strong>${bid.amount?.toLocaleString()}</strong>
                     </div>
                     <div className={styles.bidInfo}>
+                      {/* Here we’re re‐showing your bid amount as “Current Bid” */}
                       Current Bid: <strong>${bid.amount?.toLocaleString()}</strong>
                     </div>
                   </div>
@@ -166,4 +168,5 @@ export default function MyAuctionsPage() {
           )}
         </div>
       </div>
-  );}
+  );
+}
