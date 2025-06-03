@@ -10,6 +10,7 @@ import com.example.RoleBasedAuth.repository.BidRepository;
 import com.example.RoleBasedAuth.repository.ProductRepository;
 import com.example.RoleBasedAuth.repository.UserRepository;
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -29,9 +30,6 @@ public class BidController {
 
     @Autowired
     private ProductRepository productRepository;
-
-    @Autowired
-    private UserRepository userRepository;
 
     @Autowired
     private BidRepository bidRepository;
@@ -97,7 +95,7 @@ public class BidController {
     @GetMapping("/status/{productId}")
     public ResponseEntity<?> getBidStatus(
             @PathVariable Integer productId,
-            @AuthenticationPrincipal User user  // Spring Security injects authenticated user
+            @AuthenticationPrincipal User user
     ) {
         Product product = productRepository.findById(productId).orElse(null);
 
@@ -135,5 +133,16 @@ public class BidController {
         return ResponseEntity.ok(status);
     }
 
-
+    @GetMapping("/check/{productId}")
+    public ResponseEntity<?> checkIfBidExists(
+        @PathVariable Integer productId,
+        @AuthenticationPrincipal User user
+    ) {
+        Product product = productRepository.findById(productId).orElse(null);
+        if (product == null) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Product not found."));
+        }
+        boolean alreadyBid = bidRepository.existsByBidderAndProduct(user, product);
+        return ResponseEntity.ok(Map.of("alreadyBid", alreadyBid));
+    }
 }
