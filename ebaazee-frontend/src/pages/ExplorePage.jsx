@@ -292,11 +292,9 @@ export default function ExplorePage() {
     }
   };
 
-  // ─── (Removed old placeBid() entirely) ─────────────────────────────
-
-  // ─── New: when user clicks “Proceed to Payment” ────────────────────
-  const handleProceedToPayment = () => {
+  const handleProceedToPayment = async () => {
     if (!selectedProduct) return;
+
     const amt = parseFloat(bidAmount);
     if (isNaN(amt) || amt <= selectedProduct.currentBid) {
       setFeedback("⚠️ The Bid amount must be greater than the current bid.");
@@ -309,15 +307,40 @@ export default function ExplorePage() {
       return;
     }
 
-    localStorage.setItem(
-        "pendingBid",
-        JSON.stringify({
-          productId: selectedProduct.productId,
-          bidAmount: amt,
-        })
-    );
-    setModalOpen(false);
-    setSection("payment"); // ← switch to “payment” section
+    const token = localStorage.getItem("token");
+    try {
+      const checkRes = await fetch(
+          `http://localhost:9090/api/bids/check/${selectedProduct.productId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+      );
+
+      if (!checkRes.ok) {
+        throw new Error("Failed to check existing bid");
+      }
+
+      const checkData = await checkRes.json();
+
+      if (checkData.alreadyBid === true) {
+        alert("⚠️ You have already placed a bid on this product.");
+        closeBidModal();
+        return;
+      }
+
+      localStorage.setItem(
+          "pendingBid",
+          JSON.stringify({
+            productId: selectedProduct.productId,
+            bidAmount: amt,
+          })
+      );
+      setModalOpen(false);
+      setSection("payment"); // ← switch to “payment” section
+    } catch (err) {
+      console.error("Error in check endpoint:", err);
+      setFeedback("⚠️ Unable to verify bid status. Please try again.");
+    }
   };
 
   // ─── Determine product status ───────────────────────────────────────
