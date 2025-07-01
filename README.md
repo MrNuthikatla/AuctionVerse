@@ -1,4 +1,4 @@
-# AuctionVerse – Full Stack Auction Platform
+# Ebaazee – Full Stack Auction Platform
 
 A full-stack auction web application where **sellers** can post products, **buyers** can place bids, and **admins** can manage auction statuses. Built using **Spring Boot** for the backend and **React.js (Vite)** for the frontend — all maintained within a **single monorepo**.
 
